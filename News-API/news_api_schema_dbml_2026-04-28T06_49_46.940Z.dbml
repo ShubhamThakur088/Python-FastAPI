@@ -1,0 +1,39 @@
+Table news_categories [headercolor: #175e7a] {
+	category_id integer [ pk, increment, not null ]
+	category_name varchar(30)
+}
+
+Table country [headercolor: #175e7a] {
+	country_id integer [ pk, increment, not null ]
+	country_name varchar(40)
+	country_code varchar(5)
+	numeric_codes varchar(5)
+}
+
+Table news_platforms [headercolor: #175e7a] {
+	platform_id integer [ pk, increment, not null ]
+	platform_name varchar(40)
+}
+
+Table articles [headercolor: #175e7a] {
+	article_id integer [ pk, increment, not null ]
+	article_title text
+	contents text
+	category_id integer
+	country_numeric_code varchar(5)
+	platform_id integer
+	published_date_time date
+	published_language varchar(5)
+}
+
+Ref fk_articles_platform_id_news_platforms {
+	articles.platform_id > news_platforms.platform_id [ delete: no action, update: no action ]
+}
+
+Ref fk_news_categories_category_id_articles {
+	news_categories.category_id < articles.category_id [ delete: no action, update: no action ]
+}
+
+Ref fk_country_country_id_articles {
+	country.country_id < articles.country_numeric_code [ delete: no action, update: no action ]
+}

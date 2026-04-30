@@ -1,0 +1,31 @@
+from enum import Enum
+
+class NewsConstants(Enum):
+    BBC = "BBC News"
+    CNN = "CNN"
+    AP = "Associated Press"
+    BLOOMBERG = "Bloomberg"
+    BI = "Business Insider"
+    FORTUNE = "Fortune"
+    POLITICO = "Politico"
+    THE_HILL = "The Hill"
+    WASHINGTON_POST = "The Washington Post"
+    NBC = "NBC News"
+    FOX_NEWS = "Fox News"
+    TECH_CRUNCH = "TechCrunch"
+    THE_VERGE = "The Verge"
+    WIRED = "Wired"
+    ENGADGET = "Engadget"
+    NAT_GEO = "National Geographic"
+    NEW_SCIENTIST = "New Scientist"
+    MEDICAL_NEWS_TODAY="Medical News Today"
+    TIME = "Time"
+    LE_MONDE = "Le Monde"
+    THE_HINDU = "The Hindu"
+    TOI = "The Times of India"
+    INDEPENDENT = "Independent"
+    WSJ = "The Wall Street Journal"
+    ARS_TECHNICA = "Ars Technica"
+    AL_JAZEERA = "Al Jazeera English"
+
+        
