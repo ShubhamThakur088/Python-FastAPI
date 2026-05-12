@@ -4,10 +4,17 @@ from dotenv import load_dotenv
 from news_constants import NewsConstants
 from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
+from datetime import datetime
 
-class NewsService:
+class NewsService():
     def __init__(self, db):
-        self.db = db   
+        self.db = db    
+
+    def date_validator(self,value):
+        if datetime.fromisoformat(value).year == 2025 or datetime.fromisoformat(value).year == 2026:
+            return True
+        else:
+            return False    
 
     def current_news_articles(self, news_category):
         load_dotenv()
@@ -15,13 +22,15 @@ class NewsService:
         print(api_token)
         news_api_url = f"https://newsapi.org/v2/top-headlines?q={news_category}&apiKey={api_token}"
         api_response = req.get(news_api_url).json()['articles']       
-        news_constants = [e.value for e in NewsConstants]        
+        news_constants = [e.value for e in NewsConstants]
         articles = api_response
         cursor = self.db.cursor_obj()
                
         for i in range(len(articles)):
-            try:
-                if articles[i]['source']['name'] in news_constants:
+            published_at = articles[i]['publishedAt']
+            yr = self.date_validator(published_at)
+            try:                
+                if articles[i]['source']['name'] in news_constants and yr:
                     articles_url = articles[i]['url']
                     news_source = articles[i]['source']['name']
                     news_title = articles[i]['title']
@@ -47,8 +56,8 @@ class NewsService:
                             "VALUES (%s, %s, %s, %s, %s, %s)", (news_title, combined_para, news_category_id, news_platform_id, published_date, articles_url))
                     # self.db_rw_operations(self, articles_url, news_source, news_title, published_date, combined_para, news_category)
             except Exception as e:
-                print("exception occured here "+articles_url)
-    
+                print("exception occured here "+articles_url)    
+   
     # def db_rw_operations(self, articles_url, news_source, news_title, published_date, combined_para, news_category):
     #     cursor = self.db.cursor_obj()
 
