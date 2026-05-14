@@ -11,7 +11,7 @@ class NewsService():
         self.db = db    
 
     def date_validator(self,value):
-        if datetime.fromisoformat(value).year == 2025 or datetime.fromisoformat(value).year == 2026:
+        if datetime.fromisoformat(value).year >= 2025:
             return True
         else:
             return False    
@@ -37,9 +37,9 @@ class NewsService():
                     published_date = articles[i]['publishedAt']
 
                     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"
-                    request_obj = Request(articles_url,  headers = {"User-Agent":user_agent})
-                    html_response = urlopen(request_obj)
+                    request_obj = Request(articles_url,  headers = {"User-Agent":user_agent})                  
 
+                    html_response = urlopen(request_obj)
                     html_soup = BeautifulSoup(html_response, 'html.parser')
                     paragraph_list = html_soup.find_all('p')
                     para_1 = paragraph_list[4].text
