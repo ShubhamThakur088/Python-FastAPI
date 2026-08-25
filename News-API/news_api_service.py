@@ -5,8 +5,9 @@ from news_constants import NewsConstants
 from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
 from datetime import datetime
+from urllib.parse import urlparse
 
-class NewsService():
+class NewsService:
     def __init__(self, db):
         self.db = db    
 
@@ -14,15 +15,21 @@ class NewsService():
         if datetime.fromisoformat(value).year >= 2025:
             return True
         else:
-            return False    
+            return False
 
-    def current_news_articles(self, news_category):
+    @staticmethod
+    def api_access_key():
         load_dotenv()
         api_token = os.getenv("API_KEY")        
-        news_api_url = f"https://newsapi.org/v2/top-headlines?q={news_category}&apiKey={api_token}"
-        api_response = req.get(news_api_url).json()['articles']       
+        return api_token
+
+    def current_news_articles(self, news_category):        
+        api_token = NewsService.api_access_key()        
+        news_api_url = f"https://newsapi.org/v2/top-headlines?q={news_category}"
+        api_response = req.get(news_api_url, headers={"x-api-key":api_token}).json()       
         news_constants = [e.value for e in NewsConstants]
-        articles = api_response
+        print(api_response)
+        articles = api_response['articles']
         cursor = self.db.cursor_obj()
                
         for i in range(len(articles)):
@@ -32,6 +39,11 @@ class NewsService():
             try:
                 if articles[i]['source']['name'] in news_constants and yr and is_title_exist:
                     articles_url = articles[i]['url']
+                    parsed = urlparse(articles_url)
+
+                    if parsed.scheme not in('https', 'http'):
+                        raise ValueError("Invalid URL scheme")
+                    
                     news_source = articles[i]['source']['name']
                     news_title = articles[i]['title']
                     published_date = articles[i]['publishedAt']
@@ -56,7 +68,7 @@ class NewsService():
                             "VALUES (%s, %s, %s, %s, %s, %s)", (news_title, combined_para, news_category_id, news_platform_id, published_date, articles_url))
                     # self.db_rw_operations(self, articles_url, news_source, news_title, published_date, combined_para, news_category)
             except Exception as e:
-                print("exception occured here "+articles_url)
+                print("exception occured here "+articles_url)        
 
     def is_news_exists(self, article_title, cur):
         cur.execute("SELECT * FROM articles WHERE article_title = %s", (article_title,))
